@@ -3,7 +3,7 @@
 
 [![C](https://img.shields.io/badge/C-11-blue.svg)](https://en.cppreference.com/w/c)
 [![CTest](https://img.shields.io/badge/CTest-blue.svg)](https://cmake.org/cmake/help/latest/manual/ctest.1.html)
-[![CMake](https://img.shields.io/badge/CMake-3.16%2B-orange.svg)](https://cmake.org/)
+[![CMake](https://img.shields.io/badge/CMake-3.28%2B-orange.svg)](https://cmake.org/)
 
 Небольшая консольная утилита на чистом C для конвертации файлов между форматами ASCII HEX и Бинарным кодом (0/1) (HEX ↔ BIN)
 
