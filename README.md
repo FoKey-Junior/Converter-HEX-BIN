@@ -4,22 +4,25 @@
 
 [![C++](https://img.shields.io/badge/C-11-blue.svg)](https://isocpp.org/)
 [![C++](https://img.shields.io/badge/CTest-blue.svg)](https://isocpp.org/)
-[![CMake](https://img.shields.io/badge/CMake-4.1+-orange.svg)](https://cmake.org/)
+[![CMake](https://img.shields.io/badge/CMake-3.28+-orange.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A small command line utility written in pure C that converts files between ASCII HEX and binary formats (HEX ↔ BIN). The project is written entirely in English for an English-speaking audience.
+Утилита для конвертации файлов между форматами ASCII HEX и Binary.
 
-Features
-Convert HEX to BIN (-a) and BIN to HEX (-b)
-Automatically generate output file name based on input file name
--h displays usage help
-Basic tests integrated with CTest
+## 📦 Возможности
+
+- Конвертация `HEX → BIN`
+- Конвертация `BIN → HEX`
+- Автоматическое определение формата по расширению
+- Поддержка сборки через CMake
+- Тестирование через CTest
+
 
 ---
 
-### Resources used for development
+### Ресурсы, использованные при разработке
 
-The following resources were used as reference materials during development:
+При разработке в качестве справочных материалов были использованы следующие ресурсы:
 
 https://github.com/FoKey-Junior/Blockchain
 

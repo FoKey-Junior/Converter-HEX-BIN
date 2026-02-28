@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.28)
 project(test_assignment C)
 
 set(CMAKE_C_STANDARD 11)
 enable_testing()
 
-add_executable(test_assignment
+add_executable(converter
         src/main.c
         src/file_processing.c
         src/tools/conversion_to_bin.c
