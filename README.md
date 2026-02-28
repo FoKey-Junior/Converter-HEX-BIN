@@ -1,5 +1,6 @@
 <div align="center">
-# ASCII HEX / Binary Converter (C)
+
+## ASCII HEX / Binary Converter (C)
 
 [![C](https://img.shields.io/badge/C-11-blue.svg)](https://en.cppreference.com/w/c)
 [![CTest](https://img.shields.io/badge/CTest-blue.svg)](https://cmake.org/cmake/help/latest/manual/ctest.1.html)
