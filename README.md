@@ -1,8 +1,6 @@
 <div align="center">
 
-# Finder
-
-**Finder‑style файловый менеджер для macOS на Qt 6**
+## Converter HEX ↔ BIN
 
 [![C++](https://img.shields.io/badge/C-11-blue.svg)](https://isocpp.org/)
 [![C++](https://img.shields.io/badge/CTest-blue.svg)](https://isocpp.org/)
