@@ -1,31 +1,56 @@
 <div align="center">
+# ASCII HEX / Binary Converter (C)
 
-## Converter HEX ↔ BIN
+[![C](https://img.shields.io/badge/C-11-blue.svg)](https://en.cppreference.com/w/c)
+[![CTest](https://img.shields.io/badge/CTest-blue.svg)](https://cmake.org/cmake/help/latest/manual/ctest.1.html)
+[![CMake](https://img.shields.io/badge/CMake-3.16%2B-orange.svg)](https://cmake.org/)
 
-[![C++](https://img.shields.io/badge/C-11-blue.svg)](https://isocpp.org/)
-[![C++](https://img.shields.io/badge/CTest-blue.svg)](https://isocpp.org/)
-[![CMake](https://img.shields.io/badge/CMake-3.28+-orange.svg)](https://cmake.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-Утилита для конвертации файлов между форматами ASCII HEX и Binary.
-
-## 📦 Возможности
-
-- Конвертация `HEX → BIN`
-- Конвертация `BIN → HEX`
-- Автоматическое определение формата по расширению
-- Поддержка сборки через CMake
-- Тестирование через CTest
-
+Небольшая консольная утилита на чистом C для конвертации файлов между форматами ASCII HEX и Бинарным кодом (0/1) (HEX ↔ BIN)
 
 ---
 
+### Инструкция по использование
+
+1: открыть инструкцию
+
+```bash
+./converter -h
+```
+
+2: ручная конвертация (явное направление)
+
+```bash
+./converter text.hex -a
+./converter text.bin -b
+```
+
+3: автоконвертация по расширению (`.hex` -> `.bin`)
+
+```bash
+./converter text.hex
+```
+
+4: автоконвертация по расширению (`.bin` -> `.hex`)
+
+```bash
+./converter text.bin
+```
+
+Если `output_file` не указан, имя выходного файла генерируется автоматически на основе имени входного файла.
+
+---
+
+### Тесты
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
 ### Ресурсы, использованные при разработке
 
-При разработке в качестве справочных материалов были использованы следующие ресурсы:
+В качестве справочных материалов во время разработки использовались:
 
 https://github.com/FoKey-Junior/Blockchain
 
 https://cmake.org/cmake/help/latest/manual/ctest.1.html
-
 </div>

@@ -91,10 +91,10 @@ static void test_basic(void) {
     CHECK(conversion_to_bin(in_hex, out_bin) == 0);
 
     {
-        unsigned char bytes[16] = {0};
-        size_t n = read_file_small(out_bin, bytes, sizeof(bytes), "rb");
-        CHECK(n == 5);
-        CHECK(memcmp(bytes, "Hello", 5) == 0);
+        char bits[64] = {0};
+        size_t n = read_file_small(out_bin, (unsigned char *)bits, sizeof(bits) - 1, "r");
+        CHECK(n == 40);
+        CHECK(strcmp(bits, "0100100001100101011011000110110001101111") == 0);
     }
 
     CHECK(conversion_to_hex(out_bin, out_hex) == 0);

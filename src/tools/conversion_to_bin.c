@@ -12,12 +12,18 @@ static int hex_value(unsigned char c) {
     return -1;
 }
 
+static void write_bits(FILE *output, unsigned char byte) {
+    for (int bit = 7; bit >= 0; bit--) {
+        fputc(((byte >> bit) & 1) ? '1' : '0', output);
+    }
+}
+
 int conversion_to_bin(const char *input_path, const char *output_path) {
     size_t file_size = 0;
     unsigned char *file_contents = read_file(input_path, &file_size);
     if (!file_contents) return 3;
 
-    FILE *output = fopen(output_path, "wb");
+    FILE *output = fopen(output_path, "w");
     if (!output) {
         perror("Error opening output file");
         free(file_contents);
@@ -46,7 +52,7 @@ int conversion_to_bin(const char *input_path, const char *output_path) {
             have_high = 1;
         } else {
             unsigned char b = (unsigned char)((high << 4) | v);
-            fwrite(&b, 1, 1, output);
+            write_bits(output, b);
             have_high = 0;
         }
     }
