@@ -20,8 +20,8 @@
 2: ручная конвертация (явное направление)
 
 ```bash
-./converter text.hex -a
-./converter text.bin -b
+./converter text.hex -a text.bin
+./converter text.bin -b text.hex
 ```
 
 3: автоконвертация по расширению (`.hex` -> `.bin`)
@@ -35,8 +35,6 @@
 ```bash
 ./converter text.bin
 ```
-
-Если `output_file` не указан, имя выходного файла генерируется автоматически на основе имени входного файла.
 
 ---
 
