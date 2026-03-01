@@ -10,16 +10,10 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    if (argc == 2 && strcmp(argv[1], "-h") == 0) {
-        help_documentation();
-        return 0;
-    }
-
     const char *input = argv[1];
     const char *opt = argc >= 3 ? argv[2] : NULL;
-    const char *explicit_output = argc == 4 ? argv[3] : NULL;
 
-    if (opt && strcmp(opt, "-h") == 0) {
+    if ((argc == 2 && strcmp(input, "-h") == 0) || (opt && strcmp(opt, "-h") == 0)) {
         help_documentation();
         return 0;
     }
@@ -43,32 +37,54 @@ int main(int argc, char *argv[]) {
         }
     } else {
         size_t input_len = strlen(input);
-        if (input_len >= 4 && strcmp(input + input_len - 4, ".hex") == 0) {
-            out_ext = ".bin"; convert = conversion_to_bin;
-        } else if (input_len >= 4 && strcmp(input + input_len - 4, ".bin") == 0) {
-            out_ext = ".hex"; convert = conversion_to_hex;
-        } else {
+        if (input_len < 4 || input[input_len - 4] != '.') {
             fprintf(stderr, "Unsupported file extension for automatic conversion\n");
             return 1;
         }
+
+        switch (input[input_len - 1]) {
+            case 'x':
+                if (strcmp(input + input_len - 4, ".hex") == 0) {
+                    out_ext = ".bin";
+                    convert = conversion_to_bin;
+                } else {
+                    fprintf(stderr, "Unsupported file extension for automatic conversion\n");
+                    return 1;
+                }
+                break;
+            case 'n':
+                if (strcmp(input + input_len - 4, ".bin") == 0) {
+                    out_ext = ".hex";
+                    convert = conversion_to_hex;
+                } else {
+                    fprintf(stderr, "Unsupported file extension for automatic conversion\n");
+                    return 1;
+                }
+                break;
+            default:
+                fprintf(stderr, "Unsupported file extension for automatic conversion\n");
+                return 1;
+        }
     }
 
-    if (explicit_output) {
-        return convert(input, explicit_output);
+    if (argc == 4) {
+        return convert(input, argv[3]);
     }
 
-    const char *slash1 = strrchr(input, '/');
-    const char *slash2 = strrchr(input, '\\');
-    const char *slash = slash1;
-    if (slash2 && (!slash || slash2 > slash)) {
-        slash = slash2;
+    size_t input_len = strlen(input);
+    const char *dot = NULL;
+    for (size_t i = input_len; i > 0; i--) {
+        char c = input[i - 1];
+        if (c == '.') {
+            dot = input + i - 1;
+            break;
+        }
+        if (c == '/' || c == '\\') {
+            break;
+        }
     }
 
-    const char *name = slash ? slash + 1 : input;
-    const char *dot = strrchr(name, '.');
-    const char *ext = (!dot || dot == name) ? NULL : dot;
-
-    size_t base_len = ext ? (size_t)(ext - input) : strlen(input);
+    size_t base_len = dot ? (size_t)(dot - input) : input_len;
     size_t out_len = base_len + strlen(out_ext) + 1;
     char *auto_output = malloc(out_len);
     if (!auto_output) {
