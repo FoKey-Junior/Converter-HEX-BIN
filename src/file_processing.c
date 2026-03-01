@@ -5,20 +5,20 @@
 
 unsigned char* read_file(const char *file_directory, size_t *file_size) {
     *file_size = 0;
-    FILE *input = fopen(file_directory, "rb");
+    FILE *file = fopen(file_directory, "rb");
 
-    if (!input) {
+    if (!file) {
         fprintf(stderr, "Error opening input file\n");
         return NULL;
     }
 
-    fseek(input, 0, SEEK_END);
-    size_t size = ftell(input);
-    fseek(input, 0, SEEK_SET);
+    fseek(file, 0, SEEK_END);
+    const size_t size = ftell(file);
+    fseek(file, 0, SEEK_SET);
 
     if (size == 0) {
         fprintf(stderr, "Input file is empty\n");
-        fclose(input);
+        fclose(file);
         return NULL;
     }
 
@@ -26,12 +26,12 @@ unsigned char* read_file(const char *file_directory, size_t *file_size) {
 
     if (!buffer) {
         fprintf(stderr, "Error reading input file\n");
-        fclose(input);
+        fclose(file);
         return NULL;
     }
 
-    const size_t bytes_read = fread(buffer, 1, size, input);
-    fclose(input);
+    const size_t bytes_read = fread(buffer, 1, size, file);
+    fclose(file);
 
     if (bytes_read != size) {
         fprintf(stderr, "Error reading input file\n");
