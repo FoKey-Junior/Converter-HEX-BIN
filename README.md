@@ -25,19 +25,7 @@
 ./converter text.bin -b text.hex
 ```
 
-3: автоконвертация по расширению (`.hex` -> `.bin`)
-
-```bash
-./converter text.hex
-```
-
-4: автоконвертация по расширению (`.bin` -> `.hex`)
-
-```bash
-./converter text.bin
-```
-
-5: конвертация в `.txt` через `-t`
+3: конвертация в `.txt` через `-t`
 
 ```bash
 ./converter text.hex -t text.txt

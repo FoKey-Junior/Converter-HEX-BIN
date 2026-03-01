@@ -18,6 +18,11 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    if (argc == 2) {
+        fprintf(stderr, "The parameters have been entered incorrectly. If you do not know how to use the utility, use -h\n");
+        return 1;
+    }
+
     const char *out_ext = NULL;
     int (*convert)(const char *, const char *) = NULL;
 
@@ -36,35 +41,8 @@ int main(int argc, char *argv[]) {
                 return 1;
         }
     } else {
-        size_t input_len = strlen(input);
-        if (input_len < 4 || input[input_len - 4] != '.') {
-            fprintf(stderr, "Unsupported file extension for automatic conversion\n");
-            return 1;
-        }
-
-        switch (input[input_len - 1]) {
-            case 'x':
-                if (strcmp(input + input_len - 4, ".hex") == 0) {
-                    out_ext = ".bin";
-                    convert = conversion_to_bin;
-                } else {
-                    fprintf(stderr, "Unsupported file extension for automatic conversion\n");
-                    return 1;
-                }
-                break;
-            case 'n':
-                if (strcmp(input + input_len - 4, ".bin") == 0) {
-                    out_ext = ".hex";
-                    convert = conversion_to_hex;
-                } else {
-                    fprintf(stderr, "Unsupported file extension for automatic conversion\n");
-                    return 1;
-                }
-                break;
-            default:
-                fprintf(stderr, "Unsupported file extension for automatic conversion\n");
-                return 1;
-        }
+        fprintf(stderr, "The parameters have been entered incorrectly. If you do not know how to use the utility, use -h\n");
+        return 1;
     }
 
     if (argc == 4) {
