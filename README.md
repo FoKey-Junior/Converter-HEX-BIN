@@ -37,6 +37,13 @@
 ./converter text.bin
 ```
 
+5: конвертация в `.txt` через `-t`
+
+```bash
+./converter text.hex -t text.txt
+./converter text.bin -t text.txt
+```
+
 ---
 
 ### Тесты
