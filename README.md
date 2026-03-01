@@ -32,6 +32,13 @@
 ./converter text.bin -t text.txt
 ```
 
+4: конвертация из `.txt`
+
+```bash
+./converter text.txt -a text.bin
+./converter text.txt -b text.hex
+```
+
 ---
 
 ### Тесты
@@ -44,7 +51,7 @@ ctest --test-dir build --output-on-failure
 
 В качестве справочных материалов во время разработки использовались:
 
-https://github.com/FoKey-Junior/Blockchain
+https://github.com/FoKey-Junior/Finder
 
 https://cmake.org/cmake/help/latest/manual/ctest.1.html
 </div>

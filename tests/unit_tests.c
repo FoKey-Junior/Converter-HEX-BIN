@@ -74,14 +74,17 @@ static size_t read_file_small(const char *path, unsigned char *buf, size_t cap, 
 
 static void test_basic(void) {
     char in_hex[PATH_CAP] = {0};
+    char in_txt[PATH_CAP] = {0};
     char out_bin[PATH_CAP] = {0};
     char out_hex[PATH_CAP] = {0};
     char out_txt[PATH_CAP] = {0};
     path_in_dir(in_hex, "basic_input.hex");
+    path_in_dir(in_txt, "basic_input.txt");
     path_in_dir(out_bin, "basic_output.bin");
     path_in_dir(out_hex, "basic_output.hex");
     path_in_dir(out_txt, "basic_output.txt");
     remove(in_hex);
+    remove(in_txt);
     remove(out_bin);
     remove(out_hex);
     remove(out_txt);
@@ -89,6 +92,11 @@ static void test_basic(void) {
     {
         const unsigned char hex_text[] = "48 65 6C\n6C 6F";
         write_file(in_hex, hex_text, strlen((const char *)hex_text));
+    }
+
+    {
+        const unsigned char txt_bytes[] = "Hello";
+        write_file(in_txt, txt_bytes, strlen((const char *)txt_bytes));
     }
 
     CHECK(conversion_to_bin(in_hex, out_bin) == 0);
@@ -115,6 +123,22 @@ static void test_basic(void) {
         size_t n = read_file_small(out_txt, (unsigned char *)text, sizeof(text) - 1, "rb");
         CHECK(n == 5);
         CHECK(memcmp(text, "Hello", 5) == 0);
+    }
+
+    CHECK(conversion_to_bin(in_txt, out_bin) == 0);
+    {
+        char bits[64] = {0};
+        size_t n = read_file_small(out_bin, (unsigned char *)bits, sizeof(bits) - 1, "r");
+        CHECK(n == 40);
+        CHECK(strcmp(bits, "0100100001100101011011000110110001101111") == 0);
+    }
+
+    CHECK(conversion_to_hex(in_txt, out_hex) == 0);
+    {
+        char text[32] = {0};
+        size_t n = read_file_small(out_hex, (unsigned char *)text, sizeof(text) - 1, "r");
+        CHECK(n == 10);
+        CHECK(strcmp(text, "48656C6C6F") == 0);
     }
 }
 
