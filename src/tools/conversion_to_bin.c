@@ -6,88 +6,85 @@
 #include "../../include/tools.h"
 #include "../../include/file_processing.h"
 
-static int ends_with(const char *value, const char *suffix) {
-    size_t value_len = strlen(value);
-    size_t suffix_len = strlen(suffix);
-    if (value_len < suffix_len) return 0;
-    return strcmp(value + value_len - suffix_len, suffix) == 0;
+static int ends_with(const char *text, const char *suffix) {
+    const size_t text_len = strlen(text);
+    const size_t suffix_len = strlen(suffix);
+    if (text_len < suffix_len) return 0;
+    return strcmp(text + text_len - suffix_len, suffix) == 0;
 }
 
-static int hex_value(unsigned char c) {
-    if (c >= '0' && c <= '9') return (int)(c - '0');
-    if (c >= 'a' && c <= 'f') return (int)(c - 'a' + 10);
-    if (c >= 'A' && c <= 'F') return (int)(c - 'A' + 10);
+static int hex_value(unsigned char hex_char) {
+    if (hex_char >= '0' && hex_char <= '9') return (int)(hex_char - '0');
+    if (hex_char >= 'a' && hex_char <= 'f') return (int)(hex_char - 'a' + 10);
+    if (hex_char >= 'A' && hex_char <= 'F') return (int)(hex_char - 'A' + 10);
     return -1;
 }
 
 static void write_bits(FILE *output, unsigned char byte) {
-    for (int bit = 7; bit >= 0; bit--) {
-        fputc(((byte >> bit) & 1) ? '1' : '0', output);
+    for (int bit_index = 7; bit_index >= 0; bit_index--) {
+        fputc(((byte >> bit_index) & 1) ? '1' : '0', output);
     }
 }
 
-static int write_bin_from_hex(const unsigned char *data, size_t size, FILE *output) {
-    int have_high = 0;
-    int high = 0;
+static void write_bin_from_hex(const unsigned char *hex_text, size_t hex_text_size, FILE *output) {
+    int has_high_nibble = 0;
+    int high_nibble = 0;
 
-    for (size_t i = 0; i < size; i++) {
-        unsigned char c = data[i];
-        if (isspace((int)c)) continue;
+    for (size_t index = 0; index < hex_text_size; index++) {
+        const unsigned char ch = hex_text[index];
+        if (isspace((int)ch)) continue;
 
-        int v = hex_value(c);
-        if (v < 0) {
+        const int nibble = hex_value(ch);
+        if (nibble < 0) {
             fprintf(stderr, "Invalid HEX data\n");
-            return 7;
+            exit(30);
         }
 
-        if (!have_high) {
-            high = v;
-            have_high = 1;
+        if (!has_high_nibble) {
+            high_nibble = nibble;
+            has_high_nibble = 1;
         } else {
-            unsigned char b = (unsigned char)((high << 4) | v);
-            write_bits(output, b);
-            have_high = 0;
+            const unsigned char byte = (unsigned char)((high_nibble << 4) | nibble);
+            write_bits(output, byte);
+            has_high_nibble = 0;
         }
     }
 
-    if (have_high) {
+    if (has_high_nibble) {
         fprintf(stderr, "Invalid HEX file: odd number of characters\n");
-        return 5;
+        exit(31);
     }
-
-    return 0;
 }
 
-static int write_bin_from_txt(const unsigned char *data, size_t size, FILE *output) {
-    for (size_t i = 0; i < size; i++) {
-        write_bits(output, data[i]);
+static void write_bin_from_txt(const unsigned char *bytes, size_t bytes_count, FILE *output) {
+    for (size_t index = 0; index < bytes_count; index++) {
+        write_bits(output, bytes[index]);
     }
-    return 0;
 }
 
-int conversion_to_bin(const char *input_path, const char *output_path) {
-    size_t file_size = 0;
-    unsigned char *file_contents = read_file(input_path, &file_size);
-    if (!file_contents) return 3;
+void conversion_to_bin(const char *input_path, const char *output_path) {
+    size_t input_size = 0;
+    unsigned char *input_data = read_file(input_path, &input_size);
+    if (!input_data) exit(10);
 
-    FILE *output = fopen(output_path, "w");
-    if (!output) {
+    FILE *output_file = fopen(output_path, "w");
+    if (!output_file) {
         perror("Error opening output file");
-        free(file_contents);
-        return 6;
+        free(input_data);
+        exit(11);
     }
 
-    int rc = 0;
     if (ends_with(input_path, ".hex")) {
-        rc = write_bin_from_hex(file_contents, file_size, output);
+        write_bin_from_hex(input_data, input_size, output_file);
     } else if (ends_with(input_path, ".txt")) {
-        rc = write_bin_from_txt(file_contents, file_size, output);
+        write_bin_from_txt(input_data, input_size, output_file);
     } else {
         fprintf(stderr, "Unsupported file extension for BIN conversion\n");
-        rc = 1;
+        fclose(output_file);
+        free(input_data);
+        exit(20);
     }
 
-    fclose(output);
-    free(file_contents);
-    return rc;
+    fclose(output_file);
+    free(input_data);
 }

@@ -6,57 +6,53 @@
 #include "../../include/tools.h"
 #include "../../include/file_processing.h"
 
-static int ends_with(const char *value, const char *suffix) {
-    size_t value_len = strlen(value);
-    size_t suffix_len = strlen(suffix);
-    if (value_len < suffix_len) return 0;
-    return strcmp(value + value_len - suffix_len, suffix) == 0;
-}
+void conversion_to_hex(const char *input_directory, const char *output_name) {
+    size_t input_size = 0;
+    unsigned char *input_data = read_file(input_directory, &input_size);
+    if (!input_data) exit(10);
 
-int conversion_to_hex(const char *input_directory, const char *output_name) {
-    size_t file_size = 0;
-    unsigned char *file_contents = read_file(input_directory, &file_size);
-    if (!file_contents) return 3;
+    FILE *output_file = fopen(output_name, "w");
 
-    FILE *output = fopen(output_name, "w");
-
-    if (!output) {
+    if (!output_file) {
         fprintf(stderr, "Error opening output file\n");
-        free(file_contents);
-        return 4;
+        free(input_data);
+        exit(11);
     }
 
-    if (ends_with(input_directory, ".txt")) {
-        for (size_t i = 0; i < file_size; i++) {
-            fprintf(output, "%02X", file_contents[i]);
+    {
+        const size_t input_path_len = strlen(input_directory);
+        if (input_path_len >= 4 && strcmp(input_directory + input_path_len - 4, ".txt") == 0) {
+        for (size_t index = 0; index < input_size; index++) {
+            fprintf(output_file, "%02X", input_data[index]);
         }
 
-        fclose(output);
-        free(file_contents);
-        return 0;
+        fclose(output_file);
+        free(input_data);
+        return;
+        }
     }
 
     int bit_count = 0;
     unsigned char byte = 0;
 
-    for (size_t i = 0; i < file_size; i++) {
-        unsigned char c = file_contents[i];
-        if (isspace((int)c)) {
+    for (size_t index = 0; index < input_size; index++) {
+        const unsigned char input_char = input_data[index];
+        if (isspace((int)input_char)) {
             continue;
         }
 
-        if (c != '0' && c != '1') {
+        if (input_char != '0' && input_char != '1') {
             fprintf(stderr, "Invalid BIN data\n");
-            fclose(output);
-            free(file_contents);
-            return 7;
+            fclose(output_file);
+            free(input_data);
+            exit(32);
         }
 
-        byte = (unsigned char)((byte << 1) | (c == '1' ? 1 : 0));
+        byte = (unsigned char)((byte << 1) | (input_char == '1' ? 1 : 0));
         bit_count++;
 
         if (bit_count == 8) {
-            fprintf(output, "%02X", byte);
+            fprintf(output_file, "%02X", byte);
             bit_count = 0;
             byte = 0;
         }
@@ -64,12 +60,11 @@ int conversion_to_hex(const char *input_directory, const char *output_name) {
 
     if (bit_count != 0) {
         fprintf(stderr, "Invalid BIN data: number of bits is not a multiple of 8\n");
-        fclose(output);
-        free(file_contents);
-        return 5;
+        fclose(output_file);
+        free(input_data);
+        exit(33);
     }
 
-    fclose(output);
-    free(file_contents);
-    return 0;
+    fclose(output_file);
+    free(input_data);
 }

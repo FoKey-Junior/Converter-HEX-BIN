@@ -6,75 +6,73 @@
 #include "../../include/file_processing.h"
 #include "../../include/tools.h"
 
-static int ends_with(const char *value, const char *suffix) {
-    size_t value_len = strlen(value);
-    size_t suffix_len = strlen(suffix);
-    if (value_len < suffix_len) return 0;
-    return strcmp(value + value_len - suffix_len, suffix) == 0;
+static int ends_with(const char *text, const char *suffix) {
+    const size_t text_len = strlen(text);
+    const size_t suffix_len = strlen(suffix);
+    if (text_len < suffix_len) return 0;
+    return strcmp(text + text_len - suffix_len, suffix) == 0;
 }
 
-static int hex_value(unsigned char c) {
-    if (c >= '0' && c <= '9') return (int)(c - '0');
-    if (c >= 'a' && c <= 'f') return (int)(c - 'a' + 10);
-    if (c >= 'A' && c <= 'F') return (int)(c - 'A' + 10);
+static int hex_value(unsigned char hex_char) {
+    if (hex_char >= '0' && hex_char <= '9') return (int)(hex_char - '0');
+    if (hex_char >= 'a' && hex_char <= 'f') return (int)(hex_char - 'a' + 10);
+    if (hex_char >= 'A' && hex_char <= 'F') return (int)(hex_char - 'A' + 10);
     return -1;
 }
 
-static int write_txt_from_hex(const unsigned char *data, size_t size, FILE *out) {
-    int have_high = 0;
-    int high = 0;
+static void write_txt_from_hex(const unsigned char *hex_text, size_t hex_text_size, FILE *output_file) {
+    int has_high_nibble = 0;
+    int high_nibble = 0;
 
-    for (size_t i = 0; i < size; i++) {
-        unsigned char c = data[i];
-        if (isspace((int)c)) continue;
+    for (size_t index = 0; index < hex_text_size; index++) {
+        const unsigned char input_char = hex_text[index];
+        if (isspace((int)input_char)) continue;
 
-        int v = hex_value(c);
-        if (v < 0) {
+        const int nibble = hex_value(input_char);
+        if (nibble < 0) {
             fprintf(stderr, "Invalid HEX data\n");
-            return 7;
+            exit(30);
         }
 
-        if (!have_high) {
-            high = v;
-            have_high = 1;
+        if (!has_high_nibble) {
+            high_nibble = nibble;
+            has_high_nibble = 1;
         } else {
-            unsigned char b = (unsigned char)((high << 4) | v);
-            if (fwrite(&b, 1, 1, out) != 1) {
+            const unsigned char byte = (unsigned char)((high_nibble << 4) | nibble);
+            if (fwrite(&byte, 1, 1, output_file) != 1) {
                 fprintf(stderr, "Error writing output file\n");
-                return 8;
+                exit(12);
             }
-            have_high = 0;
+            has_high_nibble = 0;
         }
     }
 
-    if (have_high) {
+    if (has_high_nibble) {
         fprintf(stderr, "Invalid HEX file: odd number of characters\n");
-        return 5;
+        exit(31);
     }
-
-    return 0;
 }
 
-static int write_txt_from_bin(const unsigned char *data, size_t size, FILE *out) {
+static void write_txt_from_bin(const unsigned char *bit_text, size_t bit_text_size, FILE *output_file) {
     int bit_count = 0;
     unsigned char byte = 0;
 
-    for (size_t i = 0; i < size; i++) {
-        unsigned char c = data[i];
-        if (isspace((int)c)) continue;
+    for (size_t index = 0; index < bit_text_size; index++) {
+        const unsigned char input_char = bit_text[index];
+        if (isspace((int)input_char)) continue;
 
-        if (c != '0' && c != '1') {
+        if (input_char != '0' && input_char != '1') {
             fprintf(stderr, "Invalid BIN data\n");
-            return 7;
+            exit(32);
         }
 
-        byte = (unsigned char)((byte << 1) | (c == '1' ? 1 : 0));
+        byte = (unsigned char)((byte << 1) | (input_char == '1' ? 1 : 0));
         bit_count++;
 
         if (bit_count == 8) {
-            if (fwrite(&byte, 1, 1, out) != 1) {
+            if (fwrite(&byte, 1, 1, output_file) != 1) {
                 fprintf(stderr, "Error writing output file\n");
-                return 8;
+                exit(12);
             }
             bit_count = 0;
             byte = 0;
@@ -83,35 +81,33 @@ static int write_txt_from_bin(const unsigned char *data, size_t size, FILE *out)
 
     if (bit_count != 0) {
         fprintf(stderr, "Invalid BIN data: number of bits is not a multiple of 8\n");
-        return 5;
+        exit(33);
     }
-
-    return 0;
 }
 
-int conversion_to_txt(const char *input_path, const char *output_path) {
-    size_t file_size = 0;
-    unsigned char *file_contents = read_file(input_path, &file_size);
-    if (!file_contents) return 3;
+void conversion_to_txt(const char *input_path, const char *output_path) {
+    size_t input_size = 0;
+    unsigned char *input_data = read_file(input_path, &input_size);
+    if (!input_data) exit(10);
 
-    FILE *out = fopen(output_path, "wb");
-    if (!out) {
+    FILE *output_file = fopen(output_path, "wb");
+    if (!output_file) {
         fprintf(stderr, "Error opening output file\n");
-        free(file_contents);
-        return 4;
+        free(input_data);
+        exit(11);
     }
 
-    int rc = 0;
     if (ends_with(input_path, ".hex")) {
-        rc = write_txt_from_hex(file_contents, file_size, out);
+        write_txt_from_hex(input_data, input_size, output_file);
     } else if (ends_with(input_path, ".bin")) {
-        rc = write_txt_from_bin(file_contents, file_size, out);
+        write_txt_from_bin(input_data, input_size, output_file);
     } else {
         fprintf(stderr, "Unsupported file extension for TXT conversion\n");
-        rc = 1;
+        fclose(output_file);
+        free(input_data);
+        exit(20);
     }
 
-    fclose(out);
-    free(file_contents);
-    return rc;
+    fclose(output_file);
+    free(input_data);
 }

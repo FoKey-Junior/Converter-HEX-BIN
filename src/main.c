@@ -5,21 +5,21 @@
 #include "../include/tools.h"
 
 int main(const int argc, char *argv[]) {
-    if (argc > 4) {
-        fprintf(stderr, "The parameters have been entered incorrectly. If you do not know how to use the utility, use -h\n");
-        return 1;
-    }
-
-    if (strcmp(argv[1], "-h") == 0) {
+    if (argc == 2 && strcmp(argv[1], "-h") == 0) {
         help_documentation();
         return 0;
     }
 
-    const char *input_directory = argv[1];
-    const char *option = argv[2];
+    if (argc < 3 || argc > 4) {
+        fprintf(stderr, "The parameters have been entered incorrectly. If you do not know how to use the utility, use -h\n");
+        return 2;
+    }
+
+    const char *const input_directory = argv[1];
+    const char *const option = argv[2];
     char *output_directory;
     const char *option_extension;
-    int (*convert)(const char *, const char *);
+    void (*convert)(const char *, const char *);
 
     if (option[0] != '-') {
         fprintf(stderr, "Incorrectly entered option: %s\n", option);
@@ -28,8 +28,8 @@ int main(const int argc, char *argv[]) {
 
     switch (option[1]) {
         case 'b': option_extension = ".bin"; convert = conversion_to_bin; break;
-        case 'h': option_extension = ".hex"; convert = conversion_to_hex; break;
         case 't': option_extension = ".txt"; convert = conversion_to_txt; break;
+        case 'h': option_extension = ".hex"; convert = conversion_to_hex; break;
         default:
             fprintf(stderr, "Unknown variant: -%c\n", option[1]);
             return 3;
