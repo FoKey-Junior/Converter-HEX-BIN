@@ -10,6 +10,7 @@ static int ends_with(const char *text, const char *suffix) {
     const size_t text_len = strlen(text);
     const size_t suffix_len = strlen(suffix);
     if (text_len < suffix_len) return 0;
+
     return strcmp(text + text_len - suffix_len, suffix) == 0;
 }
 

@@ -22,13 +22,13 @@ void conversion_to_hex(const char *input_directory, const char *output_name) {
     {
         const size_t input_path_len = strlen(input_directory);
         if (input_path_len >= 4 && strcmp(input_directory + input_path_len - 4, ".txt") == 0) {
-        for (size_t index = 0; index < input_size; index++) {
-            fprintf(output_file, "%02X", input_data[index]);
-        }
+            for (size_t index = 0; index < input_size; index++) {
+                fprintf(output_file, "%02X", input_data[index]);
+            }
 
-        fclose(output_file);
-        free(input_data);
-        return;
+            fclose(output_file);
+            free(input_data);
+            return;
         }
     }
 
@@ -37,6 +37,7 @@ void conversion_to_hex(const char *input_directory, const char *output_name) {
 
     for (size_t index = 0; index < input_size; index++) {
         const unsigned char input_char = input_data[index];
+
         if (isspace((int)input_char)) {
             continue;
         }

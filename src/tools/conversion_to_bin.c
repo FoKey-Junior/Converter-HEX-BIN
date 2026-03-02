@@ -33,8 +33,8 @@ static void write_bin_from_hex(const unsigned char *hex_text, size_t hex_text_si
     for (size_t index = 0; index < hex_text_size; index++) {
         const unsigned char ch = hex_text[index];
         if (isspace((int)ch)) continue;
-
         const int nibble = hex_value(ch);
+
         if (nibble < 0) {
             fprintf(stderr, "Invalid HEX data\n");
             exit(30);
