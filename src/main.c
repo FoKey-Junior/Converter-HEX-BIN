@@ -39,17 +39,21 @@ int main(const int argc, char *argv[]) {
         output_directory = argv[3];
         convert(input_directory, output_directory);
     } else {
-        const size_t output_length = strlen(input_directory) + strlen(option_extension) + 1;
-        output_directory = malloc(output_length);
-
+        size_t len = strlen(input_directory) + strlen(option_extension) + 1;
+        output_directory = malloc(len);
         if (!output_directory) {
             fprintf(stderr, "Memory allocation failed\n");
             return 4;
         }
 
-        strcpy(output_directory, input_directory);
-        char *expansion_position = strrchr(output_directory, '.');
-        if (expansion_position) *expansion_position = '\0';
+        char *dot = strrchr(input_directory, '.');
+        if (dot) {
+            size_t base_len = dot - input_directory;
+            memcpy(output_directory, input_directory, base_len);
+            output_directory[base_len] = '\0';
+        } else {
+            strcpy(output_directory, input_directory);
+        }
         strcat(output_directory, option_extension);
 
         convert(input_directory, output_directory);
