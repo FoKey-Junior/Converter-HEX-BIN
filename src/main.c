@@ -23,7 +23,8 @@ int main(int argc, char *argv[]) {
     const char *extension = NULL;
     void (*convert)(const char *, const char *) = NULL;
 
-    if (option[0] != '-' || option[2] != '\0') {
+    if (strlen(option) != 2 || option[0] != '-')
+    //if (option[0] != '-' || option[2] != '\0') {
         fprintf(stderr, "Incorrect option: %s\n", option);
         return 2;
     }
