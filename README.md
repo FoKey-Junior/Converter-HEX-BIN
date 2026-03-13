@@ -60,12 +60,4 @@
 ```bash
 ctest --test-dir build --output-on-failure
 ```
-
-### Ресурсы, использованные при разработке
-
-В качестве справочных материалов во время разработки использовались:
-
-https://github.com/FoKey-Junior/Blockchain
-
-https://cmake.org/cmake/help/latest/manual/ctest.1.html
 </div>
