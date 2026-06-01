@@ -7,13 +7,13 @@
 [![CMake](https://img.shields.io/badge/CMake-3.16%2B-orange.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Небольшая консольная утилита на чистом C для конвертации файлов между форматами ASCII HEX и бинарным кодом (0/1) (HEX ↔ BIN)
+A small, pure C console utility for converting files between ASCII HEX and binary code (0/1) formats (HEX ↔ BIN)
 
 ---
 
-### Инструкция по использованию
+### Usage Instructions
 
-1: открыть инструкцию
+1: open instructions
 
 ```bash
 ./converter -h
@@ -21,24 +21,24 @@
 
 ---
 
-Параметры:
+Options:
 
-`-t` - перевести в `.txt`
+`-t` - convert to `.txt`
 
-`-h` - перевести в `.hex`
+`-h` - convert to `.hex`
 
-`-b` - перевести в `.bin`
+`-b` - convert to `.bin`
 
 ---
 
-2: ручная конвертация (явное направление)
+2: manual conversion (explicit direction)
 
 ```bash
 ./converter text.bin -h text.hex
 ./converter text.hex -b text.bin
 ```
 
-2.1: конвертация без указания выходного файла (имя генерируется автоматически)
+2.1: conversion without specifying an output file (name is generated automatically)
 
 ```bash
 ./converter text.bin -h
@@ -46,7 +46,7 @@
 ./converter text.hex -t
 ```
 
-3: конвертация в `.txt` через `-t`
+3: conversion to `.txt` using `-t`
 
 ```bash
 ./converter text.hex -t text.txt
@@ -55,7 +55,7 @@
 
 ---
 
-### Тесты
+### Tests
 
 ```bash
 ctest --test-dir build --output-on-failure
